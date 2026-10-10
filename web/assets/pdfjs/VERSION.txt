@@ -1,0 +1,2 @@
+pdfjs-dist 3.2.146
+Licensed under Apache License 2.0. See LICENSE.
