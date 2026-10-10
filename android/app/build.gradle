@@ -5,6 +5,16 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def releaseSigning = [
+    storeFile: System.getenv("FAKTORSAZ_KEYSTORE_PATH"),
+    keyAlias: System.getenv("FAKTORSAZ_KEY_ALIAS"),
+    storePassword: System.getenv("FAKTORSAZ_STORE_PASSWORD"),
+    keyPassword: System.getenv("FAKTORSAZ_KEY_PASSWORD")
+]
+def hasReleaseSigning = releaseSigning.values().every {
+    it != null && !it.trim().isEmpty()
+}
+
 android {
     namespace = "com.factorsaze.faktorsaz"
     compileSdk = 35
@@ -31,10 +41,20 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile = file(releaseSigning.storeFile)
+                storePassword = releaseSigning.storePassword
+                keyAlias = releaseSigning.keyAlias
+                keyPassword = releaseSigning.keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // Signing with the debug key until a dedicated release keystore is configured.
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.release
         }
     }
 }
